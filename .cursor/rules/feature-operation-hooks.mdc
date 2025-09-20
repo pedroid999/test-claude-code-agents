@@ -1,0 +1,90 @@
+---
+globs: src/features/**/hooks/**/*.ts,src/features/**/hooks/**/*.tsx
+---
+# Feature Operation Hooks
+
+This rule standardizes operational hooks that orchestrate feature behavior by composing queries, mutations, side effects, and UI notifications. 
+
+## Naming
+- Hooks must start with `use` and be descriptive: `useGenerator`, `useIntegrations`.
+- Exposed action methods use imperative names prefixed with `handle`: `handleDeleteCreateConnection`, `handleDeleteConnection`.
+- Return object keys should be stable and descriptive; suffix booleans with state verbs like `isLoading`, `isPending`.
+
+## File placement and format
+- Place in `src/features/<feature>/hooks/`.
+- Prefer `.ts` for hooks that return data/functions only. Use `.tsx` only when the hook returns JSX.
+- For low-level hooks that directly wrap React Query, use dedicated files under `hooks/queries/` and `hooks/mutations/` and compose them in the higher-level operational hook.
+
+## Imports
+- Use `toast` from `@/core/components/ui/hooks/use-toast` for user feedback.
+- Use `ApiError` from `@/core/data/apiClient` to type errors shown to users.
+- Use feature-specific schemas/types from `data/*.schema.ts`.
+
+## Structure
+- Compose query and mutation hooks at the top.
+- Centralize error handling in a single `useEffect` that aggregates errors from queries/mutations, converts to `ApiError`, and shows a destructive toast.
+- Expose `handle*` functions that wrap mutation calls and provide success toasts when appropriate.
+- Return an object `as const` with data, status flags, and handlers.
+
+Example skeleton:
+
+```ts
+import { useEffect } from 'react';
+import { toast } from '@/core/components/ui/hooks/use-toast';
+import { ApiError } from '@/core/data/apiClient';
+
+export const useFeatureOperation = () => {
+  const queryA = useQueryA();
+  const mutationB = useMutationB();
+  const mutationC = useMutationC();
+
+  useEffect(() => {
+    const error = queryA.error || mutationB.error || mutationC.error;
+    if (error) {
+      const apiError = error as ApiError;
+      toast({ title: apiError.message, description: apiError.detail, variant: 'destructive' });
+    }
+  }, [queryA.error, mutationB.error, mutationC.error]);
+
+  const handleDoB = async (input: InputB) => {
+    const result = await mutationB.mutateAsync(input);
+    toast({ title: 'Done successfully', variant: 'success', duration: 1500 });
+    return result;
+  };
+
+  const handleDoC = async (input: InputC) => {
+    return await mutationC.mutateAsync(input);
+  };
+
+  return {
+    data: queryA.data,
+    isLoading: queryA.isLoading,
+    isDoingB: mutationB.isPending,
+    handleDoB,
+    handleDoC,
+  } as const;
+};
+```
+
+## Error handling
+- Aggregate errors from all composed queries/mutations inside a single `useEffect` dependency list.
+- Cast to `ApiError` and show toast with `variant: 'destructive'`.
+- Avoid duplicating error toasts inside handler catch blocks if the `useEffect` already covers the same error sources.
+
+## Mutations and queries
+- Prefer `mutateAsync` when you need to `await` results or chain side effects.
+- Use `refetch` from queries or dedicated invalidation utilities after successful mutations when fresh data is required.
+- Expose status flags like `isPending` from mutations and `isLoading` from queries.
+
+## Success feedback and tracking
+- Show concise success toasts for user-triggered actions; default duration 1500–2000 ms.
+- Use tracking for key user actions; include relevant identifiers (e.g., thread ID, agent ID) when available.
+
+## Return shape
+- Always return a stable object with `as const`.
+- Include: data, status booleans, and `handle*` methods.
+
+## Consistency checks
+- No UI rendering inside these hooks.
+- Keep handlers small; delegate complex logic to services or mutation hooks.
+- Keep dependencies in `useEffect` complete and explicit.

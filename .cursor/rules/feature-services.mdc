@@ -1,0 +1,58 @@
+---
+globs: frontend/src/features/*/data/*.service.ts
+description: Rules for feature service API methods
+---
+
+# Feature Service Rules
+
+When working with feature services in [frontend/src/features/](mdc:frontend/src/features/):
+
+## Service Structure
+- Import `apiClient` from `@/core/data/apiClient`
+- Import all types from `./[featureName].schema`
+- Export single `[featureName]Service` object with all methods
+
+## API Method Patterns
+- Use async/await for all API calls
+- Use generic typing with apiClient: `apiClient.method<ResponseType>`
+- Follow REST conventions for endpoints
+- Use consistent parameter naming
+
+## HTTP Method Guidelines
+- `GET` for retrieving data: `apiClient.get<ResponseType>('/endpoint')`
+- `POST` for creating resources: `apiClient.post<ResponseType>('/endpoint', data)`
+- `PUT` for updating resources: `apiClient.put<ResponseType>('/endpoint/id', data)`
+- `DELETE` for removing resources: `apiClient.delete<ResponseType>('/endpoint/id')`
+
+## Implementation Pattern
+```typescript
+const [methodName] = async (data?: RequestType, id?: string): Promise<ResponseType> => {
+  return await apiClient.[httpMethod]<ResponseType>(`/[endpoint]${id ? `/${id}` : ''}`, data);
+};
+```
+
+## Service Export Pattern
+```typescript
+export const [featureName]Service = {
+  [method1],
+  [method2],
+  [method3],
+  // ... all service methods
+};
+```
+
+## Endpoint Conventions
+- Use kebab-case for URL segments
+- Include feature name in base endpoint when appropriate
+- Use RESTful resource naming
+- Include ID parameters for specific resource operations
+
+## Type Safety
+- Always use proper TypeScript return types
+- Import all required types from feature schema
+- Use specific request/response interfaces for each method
+- Handle optional parameters appropriately
+
+## Error Handling
+- Let apiClient handle HTTP errors
+- Document expected error responses in comments when needed

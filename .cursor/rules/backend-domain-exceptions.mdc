@@ -1,0 +1,52 @@
+---
+globs: backend/src/domain/exceptions/*.py
+description: Rules for backend domain exceptions in hexagonal architecture
+---
+
+# Backend Domain Exceptions Rules
+
+## Purpose
+Domain exceptions represent business rule violations and error conditions specific to the domain logic.
+
+## Structure Guidelines
+
+### Exception Hierarchy
+- Inherit from base domain exceptions in [base.py](mdc:backend/src/domain/exceptions/base.py)
+- Create entity-specific exception modules (e.g., `user.py`)
+- Use meaningful exception names that describe the business error
+
+### Base Exception Pattern
+```python
+class EntitySpecificError(DomainException):
+    """Base exception for entity-specific errors."""
+    pass
+
+class EntityNotFoundError(EntityNotFoundError):
+    """Raised when entity is not found."""
+    
+    def __init__(self, entity_id: str):
+        super().__init__("EntityName", entity_id)
+```
+
+### Custom Exception Pattern
+```python
+class InvalidEntityDataError(ValidationError):
+    """Raised when entity data is invalid."""
+    pass
+
+class BusinessRuleViolationError(BusinessRuleViolationError):
+    """Raised when business rule is violated."""
+    pass
+```
+
+### Examples
+Reference existing exceptions:
+- [Base exceptions](mdc:backend/src/domain/exceptions/base.py)
+- [User exceptions](mdc:backend/src/domain/exceptions/user.py)
+
+## Best Practices
+1. Create meaningful exception hierarchies
+2. Include descriptive error messages
+3. Inherit from appropriate base exceptions
+4. Export exceptions in `__init__.py` for easy imports
+5. Use exceptions to enforce business rules

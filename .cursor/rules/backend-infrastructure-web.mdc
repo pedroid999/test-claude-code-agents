@@ -1,0 +1,104 @@
+---
+globs: backend/src/infrastructure/web/**/*.py
+description: Rules for backend web infrastructure (routers, DTOs, dependencies) in hexagonal architecture
+---
+
+# Backend Infrastructure Web Rules
+
+## Purpose
+Web infrastructure handles HTTP requests, response formatting, dependency injection, and maps between external DTOs and internal use cases.
+
+## Structure Guidelines
+
+### Router Pattern
+```python
+from fastapi import APIRouter, Depends, HTTPException, status
+from infrastructure.web.dto.entity_dto import EntityCreateRequest, EntityResponse
+from infrastructure.web.dependencies import get_entity_use_case
+from infrastructure.web.mappers import EntityMapper
+
+router = APIRouter(prefix="/entities", tags=["Entities"])
+
+@router.get("/", response_model=List[EntityResponse])
+async def get_entities(
+    limit: int = 100,
+    use_case: GetAllEntitiesUseCase = Depends(get_entity_use_case)
+):
+    """Get all entities."""
+    try:
+        entities = await use_case.execute(limit)
+        return EntityMapper.to_response_list(entities)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+```
+
+### DTO Pattern
+```python
+from pydantic import BaseModel, Field
+from typing import Optional
+from datetime import datetime
+
+class EntityCreateRequest(BaseModel):
+    """Entity creation request DTO."""
+    field: str = Field(..., min_length=1, description="Field description")
+    
+    class Config:
+        json_schema_extra = {"example": {"field": "value"}}
+
+class EntityResponse(BaseModel):
+    """Entity response DTO."""
+    id: Optional[str]
+    field: str
+    created_at: Optional[datetime]
+```
+
+### Dependency Injection Pattern
+```python
+@lru_cache()
+def get_entity_repository() -> EntityRepositoryImplementation:
+    """Get entity repository instance."""
+    return EntityRepositoryImplementation()
+
+def get_entity_use_case(
+    repository: EntityRepositoryPort = Depends(get_entity_repository)
+) -> EntityUseCase:
+    """Get entity use case instance."""
+    return EntityUseCase(repository)
+```
+
+### Mapper Pattern
+```python
+class EntityMapper:
+    """Mapper for Entity entities and DTOs."""
+
+    @staticmethod
+    def to_response(entity: Entity) -> EntityResponse:
+        """Convert Entity to EntityResponse DTO."""
+        return EntityResponse(...)
+
+    @staticmethod
+    def to_response_list(entities: List[Entity]) -> List[EntityResponse]:
+        """Convert list of entities to response DTOs."""
+        return [EntityMapper.to_response(entity) for entity in entities]
+```
+
+### Examples
+Reference existing web infrastructure:
+- [Product router](mdc:backend/src/infrastructure/web/routers/products.py)
+- [Order router](mdc:backend/src/infrastructure/web/routers/orders.py)
+- [User router](mdc:backend/src/infrastructure/web/routers/users.py)
+- [Dependencies](mdc:backend/src/infrastructure/web/dependencies.py)
+- [DTOs](mdc:backend/src/infrastructure/web/dto/)
+- [Mappers](mdc:backend/src/infrastructure/web/mappers.py)
+
+## Best Practices
+1. Keep routers thin - delegate to use cases
+2. Use dependency injection for all dependencies
+3. Map domain exceptions to appropriate HTTP status codes
+4. Include comprehensive error handling
+5. Use Pydantic models for request/response validation
+6. Separate mappers for clean DTO ↔ Entity conversion
+7. Use `@lru_cache()` for repository singletons

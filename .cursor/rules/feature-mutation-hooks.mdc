@@ -1,0 +1,62 @@
+---
+globs: frontend/src/features/*/hooks/mutations/*.mutation.ts
+description: Rules for feature mutation hooks using React Query
+---
+
+# Feature Mutation Hooks Rules
+
+When working with feature mutation hooks in [frontend/src/features/](mdc:frontend/src/features/):
+
+## File Naming Convention
+- Use pattern: `use[ActionName].mutation.ts` (e.g., `useCreateUser.mutation.ts`)
+- Export main hook using: `export const use[ActionName]Mutation`
+- Use descriptive action names that clearly indicate the operation
+
+## Hook Structure
+- Import `useMutation` from `@tanstack/react-query`
+- Import types from `../../data/[featureName].schema`
+- Import service methods from `../../data/[featureName].service`
+
+## Implementation Pattern
+```typescript
+export const use[ActionName]Mutation = () => {
+  const [actionName]Mutation = useMutation({
+    mutationFn: async (data: RequestType) => {
+      return await [featureName]Service.[actionName](data)
+    },
+    onSuccess: (data) => {
+      // Handle success (optional)
+    },
+    onError: (error) => {
+      // Handle error (optional)
+    }
+  })
+
+  return {
+    [actionName]: [actionName]Mutation.mutate,
+    isLoading: [actionName]Mutation.isPending,
+    error: [actionName]Mutation.error,
+    isSuccess: [actionName]Mutation.isSuccess
+  }
+}
+```
+
+## Return Object Standards
+- `[actionName]`: The mutation function
+- `isLoading`: Use `isPending` from React Query mutation
+- `error`: Mutation error state
+- `isSuccess`: Success state when needed
+- Additional properties based on specific needs
+
+## Type Safety
+- Always import and use proper TypeScript types from feature schema
+- Use specific request/response types for each mutation
+- Ensure type safety for mutation parameters and return values
+
+## Query Invalidation
+- Include `queryClient.invalidateQueries()` in onSuccess when data changes affect other queries
+- Import `useQueryClient` when query invalidation is needed
+
+## Error Handling
+- Implement consistent error handling patterns
+- Use toast notifications for user feedback when appropriate

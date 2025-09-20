@@ -1,0 +1,91 @@
+[tool.poetry]
+name = "up-to-date-ai-backend"
+version = "0.1.0"
+description = "FastAPI backend implementing hexagonal architecture for ecommerce application"
+authors = ["Francisco Pastor"]
+package-mode = false
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.6"
+uvicorn = {extras = ["standard"], version = "^0.34.0"}
+motor = "^3.7.0"
+pymongo = "^4.10.1"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-multipart = "^0.0.20"
+pydantic = {extras = ["email"], version = "^2.10.5"}
+email-validator = "^2.2.0"
+pydantic-ai = "^0.8.1"
+logfire = {version = "^4.3.6", extras = ["fastapi,redis,pymongo"]}
+opentelemetry-instrumentation-fastapi = "^0.57b0"
+opentelemetry-instrumentation-pymongo = "^0.57b0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+pytest-asyncio = "^0.25.2"
+pytest-cov = "^6.0.0"
+httpx = "^0.28.1"
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-report=html",
+    "--cov-report=term-missing",
+    "--cov-fail-under=80",
+    "--asyncio-mode=auto",
+    "--asyncio-default-fixture-loop-scope=function"
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "auth: marks tests related to authentication",
+    "api: marks tests related to API endpoints",
+    "service: marks tests related to service layer",
+    "repository: marks tests related to repository layer",
+    "domain: marks tests related to domain entities"
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+    "ignore:.*@overload.*:UserWarning",
+    "ignore::pytest.PytestDeprecationWarning",
+    "ignore::pytest_asyncio.plugin.PytestDeprecationWarning"
+]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod"
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

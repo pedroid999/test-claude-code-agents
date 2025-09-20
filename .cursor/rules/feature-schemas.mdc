@@ -1,0 +1,74 @@
+---
+globs: frontend/src/features/*/data/*.schema.ts
+description: Rules for feature TypeScript interfaces and types
+---
+
+# Feature Schema Rules
+
+When working with feature schemas in [frontend/src/features/](mdc:frontend/src/features/):
+
+## Interface Organization
+Define clean TypeScript interfaces for all feature-related data structures:
+
+### Core Interface Types
+- `[FeatureName]` - Main entity interface
+- `[FeatureName]Request` - API request payload interfaces
+- `[FeatureName]Response` - API response interfaces
+- `Create[FeatureName]Request` - Creation-specific request
+- `Update[FeatureName]Request` - Update-specific request
+
+## Interface Structure Examples
+```typescript
+export interface [FeatureName] {
+  id: string;
+  // Core entity properties
+}
+
+export interface Create[FeatureName]Request {
+  // Properties required for creation
+}
+
+export interface Update[FeatureName]Request {
+  // Properties that can be updated
+}
+
+export interface [FeatureName]Response {
+  // API response structure
+}
+
+export interface [FeatureName]ListResponse {
+  items: [FeatureName][];
+  total: number;
+  // Pagination properties if applicable
+}
+```
+
+## Naming Conventions
+- Use PascalCase for all interface names
+- Use feature name as prefix for feature-specific interfaces
+- Use `Request` suffix for API request payloads
+- Use `Response` suffix for API response types
+- Use `Create`, `Update`, `Delete` prefixes for specific operations
+
+## Type Safety Guidelines
+- Export all interfaces for use across the feature
+- Use optional properties (`?`) only when fields can be undefined
+- Keep interfaces focused and single-purpose
+- Ensure interface properties match backend API contracts
+
+## File Organization
+- Keep all feature-related types in this single schema file
+- Export interfaces, not classes
+- Group related interfaces together
+- Add JSDoc comments for complex interfaces
+
+## Common Patterns
+- Include `id` field for entities that have unique identifiers
+- Use `created_at` and `updated_at` for timestamp fields
+- Include pagination interfaces for list responses
+- Define union types for status or enum-like fields
+
+## Validation
+- Consider using Zod schemas for runtime validation when needed
+- Keep TypeScript interfaces separate from validation schemas
+- Ensure consistency between frontend and backend type definitions

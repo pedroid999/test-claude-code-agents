@@ -1,0 +1,1 @@
+# Web infrastructure - FastAPI routers and dependencies

@@ -1,0 +1,61 @@
+---
+globs: frontend/src/features/*/hooks/use*Context.tsx
+description: Rules for feature context hook implementation
+---
+
+# Feature Context Hook Rules
+
+When working with feature context hooks in [frontend/src/features/](mdc:frontend/src/features/):
+
+## Context Structure
+- Create a TypeScript interface `[FeatureName]ContextType` that defines all available methods and state
+- Use `createContext<[FeatureName]ContextType | undefined>(undefined)` for proper typing
+- Export both `[FeatureName]Provider` component and `use[FeatureName]Context` custom hook
+
+## Required Context Properties
+- State properties relevant to the feature (e.g., `isLoading`, `data`, `error`)
+- Action methods for feature operations (e.g., `create`, `update`, `delete`, `fetch`)
+- Utility methods specific to the feature
+- Error handling properties
+
+## State Management
+- Use `useState` to manage feature state
+- Initialize state from localStorage or other persistent storage when appropriate
+- Import and use mutation hooks from `./mutations/` directory
+- Import and use query hooks when needed
+
+## Provider Implementation
+```typescript
+export const [FeatureName]Provider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // State management
+  // Hook usage
+  // Context value preparation
+  
+  return (
+    <[FeatureName]Context.Provider value={contextValue}>
+      {children}
+    </[FeatureName]Context.Provider>
+  );
+};
+```
+
+## Custom Hook
+```typescript
+export const use[FeatureName]Context = () => {
+  const context = useContext([FeatureName]Context);
+  if (context === undefined) {
+    throw new Error('use[FeatureName]Context must be used within a [FeatureName]Provider');
+  }
+  return context;
+};
+```
+
+## Error Handling
+- Use `toast` from 'sonner' for user notifications
+- Handle mutation and query errors appropriately
+- Provide error states through context
+
+## Dependencies
+- Import schemas from `../data/[featureName].schema`
+- Import services through mutation/query hooks
+- Use `@/core/data/appStorage` for persistent storage when needed

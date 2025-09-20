@@ -1,0 +1,56 @@
+---
+globs: backend/src/infrastructure/adapters/**/*.py
+description: Rules for backend infrastructure adapters in hexagonal architecture
+---
+
+# Backend Infrastructure Adapters Rules
+
+## Purpose
+Adapters implement the ports defined in the application layer, providing concrete implementations for external systems like databases.
+
+## Structure Guidelines
+
+### Repository Adapter Pattern
+```python
+from application.ports.repositories import EntityRepositoryPort
+from domain.entities.entity_name import EntityName
+
+class MongoDBEntityRepository(EntityRepositoryPort):
+    """MongoDB implementation of Entity Repository."""
+
+    def __init__(self):
+        self.db = get_database()
+        self.collection = self.db["collection_name"]
+
+    def _to_domain(self, doc: dict) -> EntityName:
+        """Convert MongoDB document to domain entity."""
+        # Conversion logic
+        
+    def _to_document(self, entity: EntityName) -> dict:
+        """Convert domain entity to MongoDB document."""
+        # Conversion logic
+
+    async def find_by_id(self, entity_id: str) -> Optional[EntityName]:
+        """Find entity by ID."""
+        # Implementation
+```
+
+### Conversion Methods
+- `_to_domain()`: Convert external format to domain entity
+- `_to_document()`: Convert domain entity to external format
+- Handle ID conversion (ObjectId ↔ string)
+- Manage timestamps (created_at, updated_at)
+
+### Examples
+Reference existing adapters:
+- [MongoDB Product Repository](mdc:backend/src/infrastructure/adapters/repositories/mongodb_product_repository.py)
+- [MongoDB User Repository](mdc:backend/src/infrastructure/adapters/repositories/mongodb_user_repository.py)
+- [MongoDB Order Repository](mdc:backend/src/infrastructure/adapters/repositories/mongodb_order_repository.py)
+
+## Best Practices
+1. Implement all methods from the port interface
+2. Handle data conversion between external and domain formats
+3. Manage database-specific concerns (ObjectId, timestamps)
+4. Include error handling for database operations
+5. Keep business logic out of adapters
+6. Use private methods for conversion logic

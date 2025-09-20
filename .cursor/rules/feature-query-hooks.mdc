@@ -1,0 +1,62 @@
+---
+globs: frontend/src/features/*/hooks/queries/*.query.ts
+description: Rules for feature query hooks using React Query
+---
+
+# Feature Query Hooks Rules
+
+When working with feature query hooks in [frontend/src/features/](mdc:frontend/src/features/):
+
+## File Naming Convention
+- Use pattern: `use[DataName].query.ts` (e.g., `useUser.query.ts`)
+- Export main hook using: `export const use[DataName]Query`
+- Use descriptive names that indicate what data is being fetched
+
+## Hook Structure
+- Import `useQuery` from `@tanstack/react-query`
+- Import types from `../../data/[featureName].schema`
+- Import service methods from `../../data/[featureName].service`
+
+## Implementation Pattern
+```typescript
+export const use[DataName]Query = (params?: QueryParams) => {
+  const query = useQuery({
+    queryKey: ['[featureName]', '[dataType]', params],
+    queryFn: async () => {
+      return await [featureName]Service.[methodName](params);
+    },
+    enabled: !!params?.requiredParam, // when conditional fetching is needed
+  });
+
+  return {
+    data: query.data,
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
+    isSuccess: query.isSuccess
+  };
+};
+```
+
+## Query Key Conventions
+- Use array format: `['featureName', 'dataType', ...params]`
+- Include feature name as first element
+- Include data type as second element
+- Include relevant parameters that affect the query
+
+## Return Object Standards
+- `data`: The fetched data
+- `isLoading`: Loading state
+- `error`: Error state
+- `refetch`: Function to manually refetch data
+- `isSuccess`: Success state when needed
+
+## Conditional Queries
+- Use `enabled` option to control when queries run
+- Check for required parameters before enabling query
+- Handle cases where dependencies aren't ready
+
+## Type Safety
+- Use proper TypeScript types for query parameters and return data
+- Import response types from feature schema
+- Ensure type safety for query functions and returned data

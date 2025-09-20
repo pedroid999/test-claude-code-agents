@@ -1,0 +1,15 @@
+{
+  "include": ["src", "tests"],
+  "exclude": ["**/__pycache__", "**/node_modules"],
+  "venv": ".venv",
+  "venvPath": ".",
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "basic",
+  "useLibraryCodeForTypes": true,
+  "reportMissingImports": "warning",
+  "reportMissingTypeStubs": "none",
+  "reportOptionalMemberAccess": "none",
+  "reportOptionalSubscript": "none",
+  "reportOptionalOperand": "none",
+  "stubPath": "./typings"
+}

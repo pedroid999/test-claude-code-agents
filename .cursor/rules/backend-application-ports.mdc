@@ -1,0 +1,74 @@
+---
+globs: backend/src/application/ports/*.py
+description: Rules for backend application ports (interfaces) in hexagonal architecture
+---
+
+# Backend Application Ports Rules
+
+## Purpose
+Ports define interfaces (contracts) that the application layer uses to interact with external systems. They implement the Dependency Inversion Principle.
+
+## Structure Guidelines
+
+### Repository Port Pattern
+```python
+from abc import ABC, abstractmethod
+from typing import List, Optional
+from domain.entities.entity_name import EntityName
+
+class EntityRepositoryPort(ABC):
+    """Port for entity repository operations."""
+
+    @abstractmethod
+    async def find_all(self, limit: int = 100) -> List[EntityName]:
+        """Find all entities."""
+        pass
+
+    @abstractmethod
+    async def find_by_id(self, entity_id: str) -> Optional[EntityName]:
+        """Find entity by ID."""
+        pass
+
+    @abstractmethod
+    async def create(self, entity: EntityName) -> EntityName:
+        """Create new entity."""
+        pass
+
+    @abstractmethod
+    async def update(self, entity: EntityName) -> EntityName:
+        """Update existing entity."""
+        pass
+
+    @abstractmethod
+    async def delete(self, entity_id: str) -> bool:
+        """Delete entity by ID."""
+        pass
+
+    @abstractmethod
+    async def exists(self, entity_id: str) -> bool:
+        """Check if entity exists."""
+        pass
+```
+
+### Service Port Pattern
+```python
+class ExternalServicePort(ABC):
+    """Port for external service integration."""
+
+    @abstractmethod
+    async def perform_operation(self, data: SomeType) -> ResultType:
+        """Perform external operation."""
+        pass
+```
+
+### Examples
+Reference existing ports:
+- [Repository ports](mdc:backend/src/application/ports/repositories.py)
+
+## Best Practices
+1. Use abstract base classes with `@abstractmethod`
+2. Define clear method signatures with type hints
+3. Include comprehensive docstrings
+4. Keep interfaces focused and cohesive
+5. Use async methods for I/O operations
+6. Return domain entities, not DTOs

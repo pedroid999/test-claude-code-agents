@@ -1,0 +1,55 @@
+---
+globs: backend/src/application/use_cases/*.py
+description: Rules for backend application use cases in hexagonal architecture
+---
+
+# Backend Application Use Cases Rules
+
+## Purpose
+Use cases orchestrate business workflows by coordinating domain entities and repository operations. They represent the application's business logic.
+
+## Structure Guidelines
+
+### Use Case Pattern
+```python
+class ActionEntityUseCase:
+    """Use case for performing action on entity."""
+
+    def __init__(self, entity_repository: EntityRepositoryPort):
+        self.entity_repository = entity_repository
+
+    async def execute(self, parameters) -> ReturnType:
+        """Execute the use case."""
+        # 1. Validate input parameters
+        # 2. Fetch required entities
+        # 3. Apply business logic
+        # 4. Persist changes
+        # 5. Return result
+```
+
+### Dependency Injection
+- Inject repository ports through constructor
+- Use dependency injection for all external dependencies
+- Keep use cases focused on single responsibility
+
+### Error Handling
+```python
+async def execute(self, entity_id: str) -> Entity:
+    """Execute the use case."""
+    entity = await self.entity_repository.find_by_id(entity_id)
+    if entity is None:
+        raise EntityNotFoundError(entity_id)
+    return entity
+```
+
+### Examples
+Reference existing use cases:
+- [User use cases](mdc:backend/src/application/use_cases/user_use_cases.py)
+
+## Best Practices
+1. One public method per use case class (`execute`)
+2. Inject dependencies through constructor
+3. Validate inputs and handle domain exceptions
+4. Keep use cases stateless
+5. Use meaningful class names ending with "UseCase"
+6. Focus on business workflows, not technical details
