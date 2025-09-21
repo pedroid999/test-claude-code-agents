@@ -15,15 +15,19 @@ export const newsService = {
   },
 
   async getUserNews(filters?: NewsFilters): Promise<NewsListResponse> {
+    console.log('🔍 getUserNews called with filters:', filters);
     const params = new URLSearchParams();
-    
+
     if (filters?.status) params.append('status', filters.status);
     if (filters?.category) params.append('category', filters.category);
     if (filters?.is_favorite !== undefined) params.append('is_favorite', String(filters.is_favorite));
     if (filters?.limit) params.append('limit', String(filters.limit));
     if (filters?.offset) params.append('offset', String(filters.offset));
 
-    const response = await apiClient.get<NewsListResponse>(`/api/news/user?${params}`);
+    const url = `/api/news/user?${params}`;
+    console.log('🔍 API URL:', url);
+    const response = await apiClient.get<NewsListResponse>(url);
+    console.log('🔍 API Response:', response);
     return response;
   },
 

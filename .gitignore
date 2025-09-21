@@ -88,3 +88,8 @@ coverage.xml
 # Docker volumes
 mongodb_data/
 
+# Playwright
+.playwright-mcp/
+test-results/
+playwright-report/
+

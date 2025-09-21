@@ -56,22 +56,27 @@ class GetUserNewsUseCase:
             offset=offset
         )
 
-        # Also get public news if needed
-        public_news = await self.news_repository.get_public_news(
-            category=category,
-            date_from=date_from,
-            date_to=date_to,
-            limit=limit,
-            offset=offset
-        )
+        # Only include public news if not filtering by favorites
+        if is_favorite is not True:
+            # Also get public news if needed
+            public_news = await self.news_repository.get_public_news(
+                category=category,
+                date_from=date_from,
+                date_to=date_to,
+                limit=limit,
+                offset=offset
+            )
 
-        # Combine and filter duplicates (user's news takes precedence)
-        user_news_links = {news.link for news in user_news}
-        filtered_public = [news for news in public_news if news.link not in user_news_links]
+            # Combine and filter duplicates (user's news takes precedence)
+            user_news_links = {news.link for news in user_news}
+            filtered_public = [news for news in public_news if news.link not in user_news_links]
 
-        # Combine and sort by created_at descending
-        all_news = user_news + filtered_public
-        all_news.sort(key=lambda x: x.created_at or datetime.min, reverse=True)
+            # Combine and sort by created_at descending
+            all_news = user_news + filtered_public
+            all_news.sort(key=lambda x: x.created_at or datetime.min, reverse=True)
 
-        # Apply limit after combining
-        return all_news[:limit]
+            # Apply limit after combining
+            return all_news[:limit]
+        else:
+            # When filtering by favorites, return only user's favorite items
+            return user_news
