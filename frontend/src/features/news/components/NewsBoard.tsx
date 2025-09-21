@@ -16,6 +16,7 @@ import { NewsCard } from './NewsCard';
 import { NewsMobileView } from './NewsMobileView';
 import { NewsFilters } from './NewsFilters';
 import { NewsStats } from './NewsStats';
+import { CreateNewsButton } from './CreateNewsButton';
 import { NewsStatus, type NewsItem } from '../data/news.schema';
 
 export const NewsBoard = () => {
@@ -92,7 +93,10 @@ export const NewsBoard = () => {
     return (
       <div className="space-y-4">
         <NewsStats />
-        <NewsFilters />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <NewsFilters />
+          <CreateNewsButton />
+        </div>
         <NewsMobileView />
       </div>
     );
@@ -102,7 +106,10 @@ export const NewsBoard = () => {
   return (
     <div className="space-y-6">
       <NewsStats />
-      <NewsFilters />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <NewsFilters />
+        <CreateNewsButton />
+      </div>
       
       <DndContext
         sensors={sensors}
