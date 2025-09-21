@@ -3,7 +3,7 @@
 from datetime import timedelta
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 
 from src.domain.exceptions.user import UserNotFoundError, UserAlreadyExistsError
@@ -13,7 +13,9 @@ from src.infrastructure.web.dependencies import (
     get_user_by_id_use_case,
     get_create_user_use_case,
     get_authenticate_user_use_case,
-    get_current_active_user
+    get_current_active_user,
+    get_current_user,
+    get_logout_user_use_case
 )
 from src.infrastructure.web.mappers import UserMapper
 from src.infrastructure.web.security import (
@@ -28,6 +30,7 @@ from src.application.use_cases.user_use_cases import (
     CreateUserUseCase,
     AuthenticateUserUseCase
 )
+from src.application.use_cases.user.logout_user_use_case import LogoutUserUseCase
 from src.domain.entities.user import User
 
 
@@ -129,3 +132,30 @@ async def get_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with id {user_id} not found"
         )
+
+
+@router.post("/auth/logout", status_code=status.HTTP_200_OK)
+async def logout(
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    logout_use_case: LogoutUserUseCase = Depends(get_logout_user_use_case)
+):
+    """Logout user and log the event for audit purposes.
+
+    This endpoint performs audit logging for logout events.
+    The actual token invalidation happens client-side since we use
+    short-lived JWT tokens (30 minutes).
+    """
+    try:
+        # Get user agent for audit logging
+        user_agent = request.headers.get("user-agent")
+
+        # Execute logout use case for audit logging
+        await logout_use_case.execute(current_user, user_agent)
+
+        return {"message": "Logout successful"}
+
+    except Exception as e:
+        # Logout should never fail - if audit logging fails, still return success
+        # The error will be logged internally by the use case
+        return {"message": "Logout successful"}
