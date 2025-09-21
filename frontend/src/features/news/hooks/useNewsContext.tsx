@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
 import { useUserNewsQuery } from './queries/useUserNews.query';
-import { useNewsStatsQuery } from './queries/useNewsStats.query';
 import { useUpdateStatusMutation } from './mutations/useUpdateStatus.mutation';
 import { useToggleFavoriteMutation } from './mutations/useToggleFavorite.mutation';
 import type { NewsCategory, NewsFilters, NewsItem, NewsStatus } from '../data/news.schema';
@@ -44,7 +43,6 @@ export const NewsProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   
   // Queries
   const { data: newsData, isLoading, error } = useUserNewsQuery(filters);
-  const { data: statsData } = useNewsStatsQuery();
   
   // Mutations
   const { updateStatus } = useUpdateStatusMutation();
@@ -60,14 +58,17 @@ export const NewsProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   }, [newsData]);
   
-  // Stats
-  const stats = useMemo(() => ({
-    pending: statsData?.pending_count || 0,
-    reading: statsData?.reading_count || 0,
-    read: statsData?.read_count || 0,
-    favorites: statsData?.favorite_count || 0,
-    total: statsData?.total_count || 0,
-  }), [statsData]);
+  // Stats - calculate from filtered data to reflect current view
+  const stats = useMemo(() => {
+    const news = newsData?.items || [];
+    return {
+      pending: news.filter(item => item.status === 'pending').length,
+      reading: news.filter(item => item.status === 'reading').length,
+      read: news.filter(item => item.status === 'read').length,
+      favorites: news.filter(item => item.is_favorite).length,
+      total: news.length,
+    };
+  }, [newsData]);
   
   // Actions
   const handleUpdateStatus = useCallback((newsId: string, status: NewsStatus) => {

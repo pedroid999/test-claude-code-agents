@@ -39,9 +39,8 @@ class ToggleFavoriteUseCase:
         if not news_item:
             raise NewsNotFoundException(news_id)
 
-        # Check authorization
-        if news_item.user_id != user_id:
-            raise UnauthorizedNewsAccessException(user_id, news_id)
+        # Check authorization - users can favorite any news item
+        # No authorization check needed for favoriting
 
         # Toggle favorite
         news_item.toggle_favorite()
