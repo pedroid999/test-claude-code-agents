@@ -19,6 +19,10 @@ from src.application.use_cases.user_use_cases import (
 )
 from src.application.use_cases.user.logout_user_use_case import LogoutUserUseCase
 from src.infrastructure.database import get_database
+from src.infrastructure.ai.agents.news_generation_agent import NewsGenerationAgent
+from src.config.ai_config import PerplexitySettings
+from src.application.use_cases.news.generate_ai_news_use_case import GenerateAINewsUseCase
+from src.application.use_cases.news.create_news_use_case import CreateNewsUseCase
 
 @lru_cache()
 def get_user_repository() -> MongoDBUserRepository:
@@ -105,3 +109,34 @@ async def get_current_active_user(
         "username": current_user.username,
         "is_active": current_user.is_active
     }
+
+
+# AI dependencies
+@lru_cache()
+def get_perplexity_settings() -> PerplexitySettings:
+    """Get Perplexity API settings."""
+    return PerplexitySettings()
+
+
+@lru_cache()
+def get_news_generation_agent() -> NewsGenerationAgent:
+    """Get news generation agent instance."""
+    settings = get_perplexity_settings()
+    return NewsGenerationAgent(settings)
+
+
+def get_create_news_use_case() -> CreateNewsUseCase:
+    """Get create news use case."""
+    news_repository = get_news_repository()
+    return CreateNewsUseCase(news_repository)
+
+
+def get_generate_ai_news_use_case() -> GenerateAINewsUseCase:
+    """Get AI news generation use case."""
+    news_agent = get_news_generation_agent()
+    create_news_use_case = get_create_news_use_case()
+
+    return GenerateAINewsUseCase(
+        news_generation_agent=news_agent,
+        create_news_use_case=create_news_use_case
+    )

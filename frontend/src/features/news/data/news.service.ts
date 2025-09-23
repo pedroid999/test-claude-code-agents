@@ -1,6 +1,8 @@
 import { apiClient } from '@/core/data/apiClient';
 import type {
   CreateNewsRequest,
+  GenerateAiNewsRequest,
+  GenerateAiNewsResponse,
   NewsFilters,
   NewsItem,
   NewsListResponse,
@@ -54,6 +56,11 @@ export const newsService = {
 
   async getNewsStats(): Promise<NewsStats> {
     const response = await apiClient.get<NewsStats>('/api/news/stats');
+    return response;
+  },
+
+  async generateAiNews(data: GenerateAiNewsRequest): Promise<GenerateAiNewsResponse> {
+    const response = await apiClient.post<GenerateAiNewsResponse>('/api/ai-news/generate', data);
     return response;
   },
 };

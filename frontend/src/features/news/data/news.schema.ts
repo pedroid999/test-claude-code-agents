@@ -1,17 +1,21 @@
-export enum NewsStatus {
-  PENDING = 'pending',
-  READING = 'reading',
-  READ = 'read'
-}
+export const NewsStatus = {
+  PENDING: 'pending',
+  READING: 'reading',
+  READ: 'read'
+} as const;
 
-export enum NewsCategory {
-  GENERAL = 'general',
-  RESEARCH = 'research',
-  PRODUCT = 'product',
-  COMPANY = 'company',
-  TUTORIAL = 'tutorial',
-  OPINION = 'opinion'
-}
+export type NewsStatus = typeof NewsStatus[keyof typeof NewsStatus];
+
+export const NewsCategory = {
+  GENERAL: 'general',
+  RESEARCH: 'research',
+  PRODUCT: 'product',
+  COMPANY: 'company',
+  TUTORIAL: 'tutorial',
+  OPINION: 'opinion'
+} as const;
+
+export type NewsCategory = typeof NewsCategory[keyof typeof NewsCategory];
 
 export interface NewsItem {
   id: string;
@@ -66,6 +70,18 @@ export interface NewsStats {
   read_count: number;
   favorite_count: number;
   total_count: number;
+}
+
+export interface GenerateAiNewsRequest {
+  count: number;
+  categories?: string[];
+  is_public: boolean;
+}
+
+export interface GenerateAiNewsResponse {
+  news_items: NewsItem[];
+  total_generated: number;
+  message: string;
 }
 
 // Category colors for UI

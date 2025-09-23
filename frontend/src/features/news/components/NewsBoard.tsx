@@ -17,7 +17,8 @@ import { NewsMobileView } from './NewsMobileView';
 import { NewsFilters } from './NewsFilters';
 import { NewsStats } from './NewsStats';
 import { CreateNewsButton } from './CreateNewsButton';
-import { NewsStatus, type NewsItem } from '../data/news.schema';
+import { AiNewsButton } from './AiNewsButton';
+import { NewsStatus } from '../data/news.schema';
 
 export const NewsBoard = () => {
   const { newsByStatus, updateNewsStatus, isLoading } = useNewsContext();
@@ -95,7 +96,10 @@ export const NewsBoard = () => {
         <NewsStats />
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <NewsFilters />
-          <CreateNewsButton />
+          <div className="flex gap-2">
+            <CreateNewsButton />
+            <AiNewsButton />
+          </div>
         </div>
         <NewsMobileView />
       </div>
@@ -108,7 +112,10 @@ export const NewsBoard = () => {
       <NewsStats />
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <NewsFilters />
-        <CreateNewsButton />
+        <div className="flex gap-2">
+          <CreateNewsButton />
+          <AiNewsButton />
+        </div>
       </div>
       
       <DndContext

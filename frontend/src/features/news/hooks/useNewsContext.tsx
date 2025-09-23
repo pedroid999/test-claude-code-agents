@@ -2,7 +2,8 @@ import { createContext, useContext, useState, useCallback, useMemo, type ReactNo
 import { useUserNewsQuery } from './queries/useUserNews.query';
 import { useUpdateStatusMutation } from './mutations/useUpdateStatus.mutation';
 import { useToggleFavoriteMutation } from './mutations/useToggleFavorite.mutation';
-import type { NewsCategory, NewsFilters, NewsItem, NewsStatus } from '../data/news.schema';
+import { useGenerateAiNewsMutation } from './mutations/useGenerateAiNews.mutation';
+import type { GenerateAiNewsRequest, NewsFilters, NewsItem, NewsStatus } from '../data/news.schema';
 
 interface NewsContextType {
   // State
@@ -26,6 +27,14 @@ interface NewsContextType {
   setSelectedView: (view: 'board' | 'list') => void;
   updateNewsStatus: (newsId: string, status: NewsStatus) => void;
   toggleFavorite: (newsId: string) => void;
+  generateAiNews: (data: GenerateAiNewsRequest) => void;
+
+  // AI Generation State
+  aiGeneration: {
+    isLoading: boolean;
+    error: Error | null;
+    isSuccess: boolean;
+  };
   
   // Grouped news for Kanban board
   newsByStatus: {
@@ -47,6 +56,7 @@ export const NewsProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Mutations
   const { updateStatus } = useUpdateStatusMutation();
   const { toggleFavorite } = useToggleFavoriteMutation();
+  const { generateAiNews, isLoading: isGeneratingAi, error: aiError, isSuccess: aiIsSuccess } = useGenerateAiNewsMutation();
   
   // Group news by status for Kanban board
   const newsByStatus = useMemo(() => {
@@ -78,6 +88,10 @@ export const NewsProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const handleToggleFavorite = useCallback((newsId: string) => {
     toggleFavorite(newsId);
   }, [toggleFavorite]);
+
+  const handleGenerateAiNews = useCallback((data: GenerateAiNewsRequest) => {
+    generateAiNews(data);
+  }, [generateAiNews]);
   
   const value: NewsContextType = {
     news: newsData?.items || [],
@@ -90,6 +104,12 @@ export const NewsProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setSelectedView,
     updateNewsStatus: handleUpdateStatus,
     toggleFavorite: handleToggleFavorite,
+    generateAiNews: handleGenerateAiNews,
+    aiGeneration: {
+      isLoading: isGeneratingAi,
+      error: aiError,
+      isSuccess: aiIsSuccess,
+    },
     newsByStatus,
   };
   return <NewsContext.Provider value={value}>{children}</NewsContext.Provider>;

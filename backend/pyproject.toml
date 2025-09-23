@@ -22,6 +22,7 @@ pydantic-ai = "^0.8.1"
 logfire = {version = "^4.3.6", extras = ["fastapi,redis,pymongo"]}
 opentelemetry-instrumentation-fastapi = "^0.57b0"
 opentelemetry-instrumentation-pymongo = "^0.57b0"
+httpx = "^0.28.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
