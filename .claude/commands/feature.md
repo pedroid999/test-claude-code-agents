@@ -2,7 +2,7 @@
 allowed-tools: Bash(git:*)
 argument-hint: <feature-name>
 description: Create a new Git Flow feature branch from develop with proper naming and tracking
-model: sonnet
+model: claude-sonnet-4-5-20250929
 ---
 
 # Git Flow Feature Branch

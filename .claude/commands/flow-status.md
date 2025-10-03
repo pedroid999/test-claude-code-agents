@@ -1,7 +1,7 @@
 ---
 allowed-tools: Bash(git:*), Read
 description: Display comprehensive Git Flow status including branch type, sync status, changes, and merge targets
-model: sonnet
+model: claude-sonnet-4-5-20250929
 ---
 
 # Git Flow Status
