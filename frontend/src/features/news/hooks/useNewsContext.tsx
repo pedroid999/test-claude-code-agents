@@ -3,6 +3,8 @@ import { useUserNewsQuery } from './queries/useUserNews.query';
 import { useUpdateStatusMutation } from './mutations/useUpdateStatus.mutation';
 import { useToggleFavoriteMutation } from './mutations/useToggleFavorite.mutation';
 import { useGenerateAiNewsMutation } from './mutations/useGenerateAiNews.mutation';
+import { useDeleteNewsMutation } from './mutations/useDeleteNews.mutation';
+import { useDeleteAllNewsMutation } from './mutations/useDeleteAllNews.mutation';
 import type { GenerateAiNewsRequest, NewsFilters, NewsItem, NewsStatus } from '../data/news.schema';
 
 interface NewsContextType {
@@ -28,12 +30,20 @@ interface NewsContextType {
   updateNewsStatus: (newsId: string, status: NewsStatus) => void;
   toggleFavorite: (newsId: string) => void;
   generateAiNews: (data: GenerateAiNewsRequest) => void;
+  deleteNews: (newsId: string) => void;
+  deleteAllNews: () => void;
 
   // AI Generation State
   aiGeneration: {
     isLoading: boolean;
     error: Error | null;
     isSuccess: boolean;
+  };
+
+  // Delete State
+  deleteState: {
+    isLoading: boolean;
+    error: Error | null;
   };
   
   // Grouped news for Kanban board
@@ -57,6 +67,8 @@ export const NewsProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { updateStatus } = useUpdateStatusMutation();
   const { toggleFavorite } = useToggleFavoriteMutation();
   const { generateAiNews, isLoading: isGeneratingAi, error: aiError, isSuccess: aiIsSuccess } = useGenerateAiNewsMutation();
+  const { deleteNews, isLoading: isDeleting, error: deleteError } = useDeleteNewsMutation();
+  const { deleteAllNews, isLoading: isDeletingAll, error: deleteAllError } = useDeleteAllNewsMutation();
   
   // Group news by status for Kanban board
   const newsByStatus = useMemo(() => {
@@ -92,6 +104,14 @@ export const NewsProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const handleGenerateAiNews = useCallback((data: GenerateAiNewsRequest) => {
     generateAiNews(data);
   }, [generateAiNews]);
+
+  const handleDeleteNews = useCallback((newsId: string) => {
+    deleteNews(newsId);
+  }, [deleteNews]);
+
+  const handleDeleteAllNews = useCallback(() => {
+    deleteAllNews();
+  }, [deleteAllNews]);
   
   const value: NewsContextType = {
     news: newsData?.items || [],
@@ -105,10 +125,16 @@ export const NewsProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateNewsStatus: handleUpdateStatus,
     toggleFavorite: handleToggleFavorite,
     generateAiNews: handleGenerateAiNews,
+    deleteNews: handleDeleteNews,
+    deleteAllNews: handleDeleteAllNews,
     aiGeneration: {
       isLoading: isGeneratingAi,
       error: aiError,
       isSuccess: aiIsSuccess,
+    },
+    deleteState: {
+      isLoading: isDeleting || isDeletingAll,
+      error: deleteError || deleteAllError,
     },
     newsByStatus,
   };

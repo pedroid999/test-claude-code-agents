@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Heart, ExternalLink } from 'lucide-react';
+import { Heart, ExternalLink, Trash2 } from 'lucide-react';
 import { useNewsContext } from '../hooks/useNewsContext';
 import { CATEGORY_COLORS, STATUS_COLORS, type NewsItem } from '../data/news.schema';
 import { cn } from '@/lib/utils';
@@ -14,7 +14,7 @@ interface NewsCardProps {
 }
 
 export const NewsCard = ({ item, isDragging = false }: NewsCardProps) => {
-  const { toggleFavorite } = useNewsContext();
+  const { toggleFavorite, deleteNews, deleteState } = useNewsContext();
   const {
     attributes,
     listeners,
@@ -37,6 +37,11 @@ export const NewsCard = ({ item, isDragging = false }: NewsCardProps) => {
   const handleLinkClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     window.open(item.link, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteNews(item.id);
   };
 
   return (
@@ -83,6 +88,16 @@ export const NewsCard = ({ item, isDragging = false }: NewsCardProps) => {
                 onClick={handleLinkClick}
               >
                 <ExternalLink className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 hover:text-destructive"
+                onClick={handleDeleteClick}
+                aria-label="Delete news item"
+                disabled={deleteState.isLoading}
+              >
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
           </div>

@@ -84,6 +84,11 @@ export interface GenerateAiNewsResponse {
   message: string;
 }
 
+export interface DeleteAllNewsResponse {
+  deleted_count: number;
+  message: string;
+}
+
 // Category colors for UI
 export const CATEGORY_COLORS: Record<NewsCategory, string> = {
   [NewsCategory.GENERAL]: 'bg-gray-100 text-gray-800',
