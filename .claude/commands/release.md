@@ -1,5 +1,5 @@
 ---
-allowed-tools: Bash(git:*), Read, Edit, Write
+allowed-tools: Bash(git:*), Bash(bash -c:*), Bash(cat:*), Bash(wc:*), Bash(tr:*), Read, Edit, Write
 argument-hint: <version>
 description: Create a new Git Flow release branch from develop with version bumping and changelog generation
 model: claude-sonnet-4-5-20250929
@@ -14,8 +14,6 @@ Create new release branch: **$ARGUMENTS**
 - Current branch: !`git branch --show-current`
 - Git status: !`git status --porcelain`
 - Latest tag: !`git describe --tags --abbrev=0 2>/dev/null || echo "No tags found"`
-- Commits since last tag: !`git log $(git describe --tags --abbrev=0 2>/dev/null)..HEAD --oneline 2>/dev/null | wc -l | tr -d ' '`
-- Package.json version: !`cat package.json 2>/dev/null | grep '"version"' | head -1 || echo "No package.json found"`
 - Recent commits: !`git log --oneline -10`
 
 ## Task
