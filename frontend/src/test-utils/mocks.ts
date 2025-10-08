@@ -51,6 +51,19 @@ export const mockAuthService = {
   getCurrentUser: vi.fn(),
 }
 
+// Mock News Service
+export const mockNewsService = {
+  createNews: vi.fn(),
+  getUserNews: vi.fn(),
+  getPublicNews: vi.fn(),
+  updateNewsStatus: vi.fn(),
+  toggleFavorite: vi.fn(),
+  getNewsStats: vi.fn(),
+  generateAiNews: vi.fn(),
+  deleteNews: vi.fn(),
+  deleteAllUserNews: vi.fn(),
+}
+
 // Mock App Storage
 export const mockAppStorage = {
   local: {

@@ -18,6 +18,7 @@ import { NewsFilters } from './NewsFilters';
 import { NewsStats } from './NewsStats';
 import { CreateNewsButton } from './CreateNewsButton';
 import { AiNewsButton } from './AiNewsButton';
+import { DeleteAllNewsDialog } from './DeleteAllNewsDialog';
 import { NewsStatus } from '../data/news.schema';
 
 export const NewsBoard = () => {
@@ -99,6 +100,7 @@ export const NewsBoard = () => {
           <div className="flex gap-2">
             <CreateNewsButton />
             <AiNewsButton />
+            <DeleteAllNewsDialog />
           </div>
         </div>
         <NewsMobileView />
@@ -115,6 +117,7 @@ export const NewsBoard = () => {
         <div className="flex gap-2">
           <CreateNewsButton />
           <AiNewsButton />
+          <DeleteAllNewsDialog />
         </div>
       </div>
       

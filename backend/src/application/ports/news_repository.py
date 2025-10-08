@@ -126,12 +126,24 @@ class NewsRepository(ABC):
     @abstractmethod
     async def count_by_user_and_status(self, user_id: str, status: NewsStatus) -> int:
         """Count news items for a user by status.
-        
+
         Args:
             user_id: The user ID
             status: The news status
-            
+
         Returns:
             Count of news items
+        """
+        pass
+
+    @abstractmethod
+    async def delete_all_by_user_id(self, user_id: str) -> int:
+        """Delete all news items for a specific user.
+
+        Args:
+            user_id: The user ID
+
+        Returns:
+            Count of deleted items
         """
         pass

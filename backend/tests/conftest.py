@@ -7,7 +7,9 @@ from unittest.mock import AsyncMock, Mock
 from bson import ObjectId
 
 from src.domain.entities.user import User
+from src.domain.entities.news_item import NewsItem, NewsCategory, NewsStatus
 from src.application.ports.repositories import UserRepositoryPort
+from src.application.ports.news_repository import NewsRepository
 
 
 # Domain Entity Fixtures
@@ -133,7 +135,7 @@ def invalid_user_create_data():
 def mock_user_repository():
     """Mock UserRepositoryPort for testing use cases."""
     mock = AsyncMock(spec=UserRepositoryPort)
-    
+
     # Configure default return values
     mock.find_all.return_value = []
     mock.find_by_id.return_value = None
@@ -143,7 +145,26 @@ def mock_user_repository():
     mock.update.return_value = None
     mock.delete.return_value = False
     mock.exists.return_value = False
-    
+
+    return mock
+
+
+@pytest.fixture
+def mock_news_repository():
+    """Mock NewsRepository for testing use cases."""
+    mock = AsyncMock(spec=NewsRepository)
+
+    # Configure default return values
+    mock.create.return_value = None
+    mock.get_by_id.return_value = None
+    mock.get_by_user_id.return_value = []
+    mock.get_public_news.return_value = []
+    mock.update.return_value = None
+    mock.delete.return_value = False
+    mock.exists_by_link_and_user.return_value = False
+    mock.count_by_user_and_status.return_value = 0
+    mock.delete_all_by_user_id.return_value = 0
+
     return mock
 
 
@@ -227,6 +248,137 @@ def test_users_list(valid_user_data):
         })
         users.append(User(**data))
     return users
+
+
+# News Domain Entity Fixtures
+@pytest.fixture
+def valid_news_data():
+    """Valid news data for creating NewsItem entities."""
+    return {
+        "source": "TechCrunch",
+        "title": "New AI Breakthrough",
+        "summary": "Scientists have made significant progress in AI research.",
+        "link": "https://example.com/ai-breakthrough",
+        "image_url": "https://example.com/image.jpg",
+        "category": NewsCategory.RESEARCH,
+        "user_id": "user123",
+        "is_public": False,
+        "status": NewsStatus.PENDING,
+        "is_favorite": False,
+    }
+
+
+@pytest.fixture
+def news_item(valid_news_data):
+    """Create a valid NewsItem entity without ID."""
+    return NewsItem(**valid_news_data)
+
+
+@pytest.fixture
+def news_item_with_id(valid_news_data):
+    """Create a valid NewsItem entity with ID."""
+    data = valid_news_data.copy()
+    data.update({
+        "id": "60f1f77bcf86cd7994390011",
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow(),
+    })
+    return NewsItem(**data)
+
+
+@pytest.fixture
+def public_news_item_with_id(valid_news_data):
+    """Create a public NewsItem entity with ID."""
+    data = valid_news_data.copy()
+    data.update({
+        "id": "60f1f77bcf86cd7994390012",
+        "is_public": True,
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow(),
+    })
+    return NewsItem(**data)
+
+
+@pytest.fixture
+def favorite_news_item_with_id(valid_news_data):
+    """Create a favorite NewsItem entity with ID."""
+    data = valid_news_data.copy()
+    data.update({
+        "id": "60f1f77bcf86cd7994390013",
+        "is_favorite": True,
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow(),
+    })
+    return NewsItem(**data)
+
+
+@pytest.fixture
+def news_items_list(valid_news_data):
+    """List of test NewsItem entities."""
+    news_items = []
+    statuses = [NewsStatus.PENDING, NewsStatus.READING, NewsStatus.READ]
+    categories = [NewsCategory.RESEARCH, NewsCategory.TUTORIAL, NewsCategory.GENERAL]
+
+    for i in range(5):
+        data = valid_news_data.copy()
+        data.update({
+            "id": f"60f1f77bcf86cd79943901{i}",
+            "title": f"News Title {i}",
+            "link": f"https://example.com/news{i}",
+            "status": statuses[i % len(statuses)],
+            "category": categories[i % len(categories)],
+            "is_favorite": i % 2 == 0,  # Every other item is favorite
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow(),
+        })
+        news_items.append(NewsItem(**data))
+    return news_items
+
+
+# News MongoDB Document Fixtures
+@pytest.fixture
+def news_document():
+    """MongoDB document representation of a news item."""
+    return {
+        "_id": ObjectId(),
+        "source": "TechCrunch",
+        "title": "Test News",
+        "summary": "Test summary",
+        "link": "https://example.com/news",
+        "image_url": "https://example.com/image.jpg",
+        "category": "research",
+        "user_id": "user123",
+        "is_public": False,
+        "status": "pending",
+        "is_favorite": False,
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow(),
+    }
+
+
+@pytest.fixture
+def news_documents_list():
+    """List of MongoDB news documents."""
+    documents = []
+    statuses = ["pending", "reading", "read"]
+
+    for i in range(5):
+        documents.append({
+            "_id": ObjectId(),
+            "source": "TechCrunch",
+            "title": f"News Title {i}",
+            "summary": f"News summary {i}",
+            "link": f"https://example.com/news{i}",
+            "image_url": "https://example.com/image.jpg",
+            "category": "research",
+            "user_id": "user123",
+            "is_public": False,
+            "status": statuses[i % len(statuses)],
+            "is_favorite": i % 2 == 0,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow(),
+        })
+    return documents
 
 
 # Error Scenarios Fixtures

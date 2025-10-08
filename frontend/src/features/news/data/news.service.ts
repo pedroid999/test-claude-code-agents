@@ -1,6 +1,7 @@
 import { apiClient } from '@/core/data/apiClient';
 import type {
   CreateNewsRequest,
+  DeleteAllNewsResponse,
   GenerateAiNewsRequest,
   GenerateAiNewsResponse,
   NewsFilters,
@@ -61,6 +62,15 @@ export const newsService = {
 
   async generateAiNews(data: GenerateAiNewsRequest): Promise<GenerateAiNewsResponse> {
     const response = await apiClient.post<GenerateAiNewsResponse>('/api/ai-news/generate', data);
+    return response;
+  },
+
+  async deleteNews(newsId: string): Promise<void> {
+    await apiClient.delete(`/api/news/${newsId}`);
+  },
+
+  async deleteAllUserNews(): Promise<DeleteAllNewsResponse> {
+    const response = await apiClient.delete<DeleteAllNewsResponse>('/api/news/user/all');
     return response;
   },
 };
