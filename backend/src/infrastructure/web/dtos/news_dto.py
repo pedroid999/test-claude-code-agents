@@ -122,3 +122,17 @@ class NewsStatsResponseDTO(BaseModel):
     read_count: int
     favorite_count: int
     total_count: int
+
+
+class DeleteAllNewsResponseDTO(BaseModel):
+    """DTO for delete all news response."""
+    deleted_count: int
+    message: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "deleted_count": 42,
+                "message": "Successfully deleted 42 news items"
+            }
+        }

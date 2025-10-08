@@ -182,3 +182,11 @@ class MongoDBNewsRepository(NewsRepository):
             "user_id": user_id,
             "status": status.value
         })
+
+    async def delete_all_by_user_id(self, user_id: str) -> int:
+        """Delete all news items for a specific user."""
+        try:
+            result = await self.collection.delete_many({"user_id": user_id})
+            return result.deleted_count
+        except Exception:
+            return 0

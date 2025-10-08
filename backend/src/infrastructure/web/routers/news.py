@@ -6,6 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from src.application.use_cases.news import (
     CreateNewsUseCase,
+    DeleteAllUserNewsUseCase,
+    DeleteNewsUseCase,
     GetPublicNewsUseCase,
     GetUserNewsUseCase,
     ToggleFavoriteUseCase,
@@ -20,6 +22,7 @@ from src.domain.exceptions.news_exceptions import (
 from src.infrastructure.web.dependencies import get_current_active_user
 from src.infrastructure.web.dtos.news_dto import (
     CreateNewsRequestDTO,
+    DeleteAllNewsResponseDTO,
     NewsCategoryDTO,
     NewsListResponseDTO,
     NewsResponseDTO,
@@ -61,6 +64,18 @@ def get_public_news_use_case() -> GetPublicNewsUseCase:
     """Get public news use case."""
     from src.infrastructure.web.dependencies import get_news_repository
     return GetPublicNewsUseCase(get_news_repository())
+
+
+def get_delete_news_use_case() -> DeleteNewsUseCase:
+    """Get delete news use case."""
+    from src.infrastructure.web.dependencies import get_news_repository
+    return DeleteNewsUseCase(get_news_repository())
+
+
+def get_delete_all_user_news_use_case() -> DeleteAllUserNewsUseCase:
+    """Get delete all user news use case."""
+    from src.infrastructure.web.dependencies import get_news_repository
+    return DeleteAllUserNewsUseCase(get_news_repository())
 
 
 @router.post("", response_model=NewsResponseDTO, status_code=status.HTTP_201_CREATED)
@@ -231,3 +246,41 @@ async def get_news_stats(
         favorite_count=favorite_count,
         total_count=len(all_news),
     )
+
+
+@router.delete("/user/all", response_model=DeleteAllNewsResponseDTO)
+async def delete_all_user_news(
+    current_user: dict = Depends(get_current_active_user),
+    use_case: DeleteAllUserNewsUseCase = Depends(get_delete_all_user_news_use_case),
+) -> DeleteAllNewsResponseDTO:
+    """Delete all news items for the current user."""
+    deleted_count = await use_case.execute(user_id=current_user["id"])
+
+    return DeleteAllNewsResponseDTO(
+        deleted_count=deleted_count,
+        message=f"Successfully deleted {deleted_count} news items",
+    )
+
+
+@router.delete("/{news_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_news(
+    news_id: str,
+    current_user: dict = Depends(get_current_active_user),
+    use_case: DeleteNewsUseCase = Depends(get_delete_news_use_case),
+) -> None:
+    """Delete a specific news item."""
+    try:
+        await use_case.execute(
+            news_id=news_id,
+            user_id=current_user["id"],
+        )
+    except NewsNotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except UnauthorizedNewsAccessException as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(e),
+        )
