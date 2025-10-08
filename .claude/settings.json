@@ -1,9 +1,12 @@
 {
   "permissions": {
     "allow": [
+      "Bash(git log:*)",
+      "Bash(git describe:*)",
+      "Bash(bash -c:*)"
     ],
     "deny": [
-    
+
     ]
   },
   "enabledMcpjsonServers": [
