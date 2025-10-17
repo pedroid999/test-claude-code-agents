@@ -72,7 +72,7 @@ export const NewsCard = ({ item, isDragging = false }: NewsCardProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7"
+                className="h-11 w-11 md:h-7 md:w-7"
                 onClick={handleFavoriteClick}
                 aria-label="Toggle favorite"
               >
@@ -83,11 +83,11 @@ export const NewsCard = ({ item, isDragging = false }: NewsCardProps) => {
                   )}
                 />
               </Button>
-              <TwitterShareButton newsItem={item} className="h-7 w-7" />
+              <TwitterShareButton newsItem={item} />
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7"
+                className="h-11 w-11 md:h-7 md:w-7"
                 onClick={handleLinkClick}
                 aria-label="Open news link"
               >
@@ -96,7 +96,7 @@ export const NewsCard = ({ item, isDragging = false }: NewsCardProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 hover:text-destructive"
+                className="h-11 w-11 md:h-7 md:w-7 hover:text-destructive"
                 onClick={handleDeleteClick}
                 aria-label="Delete news item"
                 disabled={deleteState.isLoading}

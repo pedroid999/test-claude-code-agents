@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Share2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import { generateTwitterUrl, openTwitterShare, getSavedTwitterHandle } from '../data/twitter.utils';
 import type { NewsItem } from '../data/news.schema';
 
@@ -43,7 +44,7 @@ export const TwitterShareButton = ({ newsItem, className }: TwitterShareButtonPr
     <Button
       variant="ghost"
       size="icon"
-      className={className}
+      className={cn('h-11 w-11 md:h-7 md:w-7', className)}
       onClick={handleShare}
       aria-label="Share on Twitter"
     >

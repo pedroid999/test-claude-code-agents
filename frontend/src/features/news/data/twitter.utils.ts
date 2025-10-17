@@ -10,6 +10,11 @@ export const generateTwitterUrl = (
   newsItem: NewsItem,
   twitterHandle?: string
 ): string => {
+  // Validate that news item has a valid link
+  if (!newsItem.link || newsItem.link.trim() === '') {
+    throw new Error('News item must have a valid link');
+  }
+
   const baseUrl = 'https://twitter.com/intent/tweet';
   const params = new URLSearchParams();
 
@@ -88,8 +93,13 @@ export const openTwitterShare = (url: string): void => {
  * @returns The saved Twitter handle or undefined
  */
 export const getSavedTwitterHandle = (): string | undefined => {
-  const saved = localStorage.getItem('twitter-handle');
-  return saved || undefined;
+  try {
+    const saved = localStorage.getItem('twitter-handle');
+    return saved || undefined;
+  } catch (error) {
+    console.warn('localStorage unavailable:', error);
+    return undefined;
+  }
 };
 
 /**
@@ -97,10 +107,14 @@ export const getSavedTwitterHandle = (): string | undefined => {
  * @param handle - The Twitter handle to save
  */
 export const saveTwitterHandle = (handle: string): void => {
-  if (handle) {
-    const cleanHandle = handle.replace(/^@/, '');
-    localStorage.setItem('twitter-handle', cleanHandle);
-  } else {
-    localStorage.removeItem('twitter-handle');
+  try {
+    if (handle) {
+      const cleanHandle = handle.replace(/^@/, '');
+      localStorage.setItem('twitter-handle', cleanHandle);
+    } else {
+      localStorage.removeItem('twitter-handle');
+    }
+  } catch (error) {
+    console.warn('localStorage unavailable:', error);
   }
 };
