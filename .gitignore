@@ -93,3 +93,6 @@ mongodb_data/
 test-results/
 playwright-report/
 
+# Git worktrees
+.trees/
+
