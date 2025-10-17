@@ -5,6 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.2] - 2025-10-17
+
+### ✨ Features
+
+- **Twitter Sharing Integration** (d0bcfef, ebb8487)
+  - Added comprehensive Twitter sharing functionality for news items
+  - New `TwitterShareButton` component with Share2 icon from Lucide
+  - Generate Twitter intent URLs with pre-filled title, URL, and category-based hashtags
+  - Optional Twitter handle support (saves to localStorage for future shares)
+  - Smart title truncation (max 200 characters) to fit Twitter's limits
+  - Toast notifications for share success/failure using Sonner
+  - Comprehensive validation for Twitter handles (1-15 chars, alphanumeric + underscore)
+  - [PR #1](https://github.com/user/repo/pull/1)
+
+### 🐛 Bug Fixes
+
+- **Twitter Sharing Enhancements** (ebb8487)
+  - Added error handling for localStorage operations (prevents crashes in private browsing mode)
+  - Implemented link validation in generateTwitterUrl (throws error for invalid/empty links)
+  - Enhanced mobile accessibility with WCAG 2.1 AA compliant touch targets (44x44px)
+  - Added aria-labels to all action buttons for screen reader support
+
+### 🧪 Testing
+
+- **Twitter Utils Test Suite**
+  - Added 20 comprehensive unit tests for twitter.utils.ts
+  - URL generation tests (basic, with handle, truncation, encoding)
+  - Handle validation tests (valid formats, invalid chars, length limits)
+  - localStorage tests (save, retrieve, error handling)
+  - All tests passing with 100% coverage
+
+### 🔧 Chore
+
+- **Git Flow Configuration** (0562987)
+  - Added prevent-direct-push hook to protect main/develop branches
+  - Added validate-branch-name hook to enforce naming conventions
+  - Updated Claude settings for better Git Flow integration
+
+### 📊 Release Statistics
+
+- **3 commits** since v1.1.1
+- **1 major feature** (Twitter sharing integration)
+- **1 bug fix** (QA feedback improvements)
+- **1 chore** (Git Flow hooks)
+- **0 breaking changes**
+- **20 new tests** (100% passing)
+
+---
+
 ## [v1.1.1] - 2025-10-08
 
 ### 🔧 Chore
